@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="brand_primary">#3B82F6</color>
+    <color name="brand_primary_dark">#1D4ED8</color>
+    <color name="badge_required">#DC2626</color>
+    <color name="badge_recommended">#D97706</color>
+    <color name="badge_optional">#6B7280</color>
+</resources>
