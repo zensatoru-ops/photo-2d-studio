@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#111111">
+
+        <ImageView
+            android:id="@+id/imageSource"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter" />
+
+        <com.photo2model.studio.ui.MaskCanvasView
+            android:id="@+id/maskCanvas"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/textForegroundCount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="6dp"
+        android:gravity="center"
+        android:textSize="12sp" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="4dp">
+
+            <Button android:id="@+id/buttonToolLasso" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tool_lasso" />
+            <Button android:id="@+id/buttonCommitLasso" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/action_apply" />
+            <Button android:id="@+id/buttonCancelLasso" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/action_cancel" />
+            <Button android:id="@+id/buttonToolBrush" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tool_brush" />
+            <Button android:id="@+id/buttonToolEraser" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tool_eraser" />
+            <Button android:id="@+id/buttonThresholdSample" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tool_threshold" />
+            <Button android:id="@+id/buttonFloodFill" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tool_flood_fill" />
+            <Button android:id="@+id/buttonFillHoles" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tool_fill_holes" />
+            <Button android:id="@+id/buttonLargestComponent" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tool_largest_component" />
+            <Button android:id="@+id/buttonInvert" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tool_invert" />
+            <Button android:id="@+id/buttonTraceContour" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tool_trace_contour" />
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <Button
+        android:id="@+id/buttonSaveMask"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/action_save_mask" />
+
+</LinearLayout>
