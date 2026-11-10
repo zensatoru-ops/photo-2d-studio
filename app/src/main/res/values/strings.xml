@@ -61,4 +61,18 @@
     <string name="view_right">Right Side</string>
     <string name="view_three_quarter">3/4 View</string>
     <string name="view_top">Top</string>
+
+    <string name="action_build_mesh">Build 3D Mesh</string>
+    <string name="reconstruction_title">Build Visual Hull</string>
+    <string name="label_resolution">Voxel Resolution</string>
+    <string name="resolution_format">%1$d × %2$d × %3$d voxels</string>
+    <string name="hint_resolution_tradeoff">Higher resolution catches finer silhouette detail but takes longer and uses more memory. 48 is a reasonable starting point.</string>
+    <string name="no_masks_available">No masks found yet — edit masks from the Import screen first.</string>
+    <string name="masks_available_format">Masks available: %1$s</string>
+    <string name="status_carving">Carving voxel grid and extracting surface…</string>
+    <string name="status_cancelled">Cancelled</string>
+    <string name="status_done_format">Done — %1$d vertices, %2$d triangles, from: %3$s</string>
+
+    <string name="mesh_viewer_title">%1$d verts / %2$d tris</string>
+    <string name="mesh_stats_format">%1$d vertices · %2$d triangles</string>
 </resources>

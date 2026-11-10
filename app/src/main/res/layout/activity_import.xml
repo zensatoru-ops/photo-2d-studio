@@ -24,6 +24,16 @@
         android:clipToPadding="false"
         android:padding="4dp"
         app:layout_constraintTop_toBottomOf="@id/textWarnings"
+        app:layout_constraintBottom_toTopOf="@id/buttonBuildMeshEntry"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/buttonBuildMeshEntry"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:text="@string/action_build_mesh"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

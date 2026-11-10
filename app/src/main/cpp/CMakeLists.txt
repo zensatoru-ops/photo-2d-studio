@@ -5,6 +5,8 @@ add_library(photo2model_core SHARED
     native_bridge.cpp
     image_probe.cpp
     mask_ops.cpp
+    voxel_carve.cpp
+    surface_nets.cpp
 )
 
 target_include_directories(photo2model_core PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

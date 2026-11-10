@@ -1,9 +1,54 @@
-# Photo2Model Studio — Phase 1 + Phase 2
+# Photo2Model Studio — Phase 1 + 2 + 3
 
 Project Manager + Multi-View Import (Phase 1), Mask Editor + Landmark
-Editor + full consistency validator (Phase 2). Native core wired via JNI
-from turn one — all per-pixel mask work runs in C++, everything else in
-Kotlin.
+Editor + consistency validator (Phase 2), Voxel Visual Hull + Surface Nets
+mesh + OpenGL viewer (Phase 3 - "First 3D Reconstruction", the roadmap's
+MVP core). Native core wired via JNI from turn one — every per-pixel and
+per-voxel operation runs in C++, everything else in Kotlin.
+
+## Phase 3 additions — First 3D Reconstruction
+
+- **Voxel carving** (`voxel_carve.h/.cpp`) — classic shape-from-silhouette
+  (master plan Method B): a voxel survives only if its projection lands
+  inside every available view's mask. With just Front + one Side (the
+  minimum this requires), that's Method A's 2D silhouette intersection
+  done in 3D - it won't recover concavities a silhouette can't show, which
+  is Method B's known limitation, not a bug.
+- **No camera calibration step exists yet.** Each view calibrates off its
+  *own* mask bounding box - documented, fixed axis-mapping assumptions
+  (Front/Back project x,y; Left/Right project z,y; Top projects x,z; Back
+  and Right are horizontally mirrored since they're seen from the opposite
+  side). If a character's drawn facing a different way than these
+  assumptions expect, the hull comes out backward along one axis - cosmetic,
+  fixable by Phase 8's Advanced Editor, not a correctness failure of the
+  carve itself.
+- **Surface Nets** (`surface_nets.h/.cpp`) — converts the occupancy grid to
+  a triangle mesh with smooth per-vertex normals. Deliberately not Marching
+  Cubes: MC's 256-case edge table is ~4,000 hardcoded integers with no way
+  to usefully shorten it, and Surface Nets (Gibson 1998) gets a comparable
+  non-blocky result from an algorithm that's maybe 150 lines, correctly
+  windable from first principles (each face's winding is resolved against
+  the known inside→outside direction at that occupancy boundary, not
+  memorized per-axis).
+- **One JNI call** (`nativeBuildVisualHullMesh`) does carve + mesh together
+  and hands back a single packed `FloatArray` - avoids crossing the JNI
+  boundary with an entire voxel grid, consistent with how `mask_ops` already
+  mutates arrays in place rather than round-tripping.
+- **`ReconstructionActivity`** — resolution slider (24³ to 96³, default
+  48³), runs the native call on a plain background `Thread` (Section 4's
+  "job system," minimal version - no WorkManager/coroutines dependency
+  added for one task). Cancel is soft: it frees the UI immediately but
+  doesn't interrupt an in-flight native carve, which is stated plainly in
+  the code rather than implied to be a hard stop.
+- **`MeshViewerActivity`** — OpenGL ES 2.0, one directional light, flat
+  clay-gray shading (texture projection is Phase 6 — this view exists to
+  judge *shape*, not final look). Drag to orbit, pinch to zoom.
+- **`ObjExporter`** / **`ObjLoader`** — bare vertices/normals/faces, no
+  UVs or materials, written to `reconstruction/preview_mesh.obj` exactly
+  where Phase 1's directory layout already named it. `ObjLoader` is a
+  narrow reader that only handles exactly what `ObjExporter` writes - not
+  a general OBJ importer - used as a fallback if `MeshViewerActivity` is
+  recreated after process death and the in-memory mesh handoff is gone.
 
 ## Phase 2 additions
 
@@ -65,10 +110,13 @@ a general set-algebra tool.
 
 ## Not in this build (later phases)
 
-OpenCV integration, visual hull, mesh generation, texture projection,
-export. Section 21's open architecture decisions (orthographic-only MVP,
-GLB timing, mesh-core build-vs-library) aren't resolved here — this phase
-doesn't need them yet.
+Cross-section/profile-lofting correction (Method C, Phase 4), mesh cleanup
+beyond what Surface Nets gives for free (decimation, retopology - Phase 5),
+texture projection (Phase 6), GLB/FBX export (Phase 7 - only raw OBJ exists
+now), the full Advanced Editor (Phase 8), rigging prep (Phase 9). OpenCV
+still isn't integrated - every CV operation in this build (mask ops, voxel
+carve, surface nets) is hand-rolled, matching the plan's "classic CV, no
+AI" stance by construction rather than by having a library to avoid.
 
 ## Build
 
@@ -123,7 +171,9 @@ app/src/main/
 │   ├── CMakeLists.txt
 │   ├── native_bridge.cpp      # JNI entry points
 │   ├── image_probe.h/.cpp     # PNG/JPEG/WebP header parsing
-│   └── mask_ops.h/.cpp        # flood fill, hole fill, largest component, contour trace
+│   ├── mask_ops.h/.cpp        # flood fill, hole fill, largest component, contour trace
+│   ├── voxel_carve.h/.cpp     # shape-from-silhouette visual hull
+│   └── surface_nets.h/.cpp    # voxel grid -> triangle mesh
 ├── java/com/photo2model/studio/
 │   ├── core/
 │   │   ├── NativeBridge.kt
@@ -131,12 +181,18 @@ app/src/main/
 │   │   ├── ProjectManager.kt         # filesystem + import logic
 │   │   ├── MaskManager.kt            # mask PNG I/O, threshold, alpha-seed
 │   │   ├── Landmark.kt               # LandmarkSchema, LandmarkSet (JSON)
-│   │   └── ConsistencyValidator.kt   # section 5.5 checks
+│   │   ├── ConsistencyValidator.kt   # section 5.5 checks
+│   │   ├── ReconstructionManager.kt  # mask -> constraint -> native carve+mesh
+│   │   ├── ObjExporter.kt / ObjLoader.kt
+│   │   └── MeshHandoff.kt            # in-process mesh handoff between Activities
 │   └── ui/
 │       ├── ProjectListActivity.kt
 │       ├── ImportActivity.kt
 │       ├── MaskEditorActivity.kt
 │       ├── LandmarkEditorActivity.kt
+│       ├── ReconstructionActivity.kt
+│       ├── MeshViewerActivity.kt
+│       ├── MeshGLRenderer.kt
 │       ├── CropOverlayView.kt
 │       ├── MaskCanvasView.kt
 │       ├── LandmarkOverlayView.kt

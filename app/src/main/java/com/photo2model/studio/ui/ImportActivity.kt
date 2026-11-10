@@ -57,6 +57,12 @@ class ImportActivity : AppCompatActivity() {
         binding.recyclerViewSlots.layoutManager = GridLayoutManager(this, 2)
         binding.recyclerViewSlots.adapter = adapter
 
+        binding.buttonBuildMeshEntry.setOnClickListener {
+            val meshIntent = Intent(this, ReconstructionActivity::class.java)
+            meshIntent.putExtra(ReconstructionActivity.EXTRA_PROJECT_DIR, handle.dir.absolutePath)
+            startActivity(meshIntent)
+        }
+
         updateConsistencyWarnings()
     }
 
